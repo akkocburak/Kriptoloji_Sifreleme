@@ -1,10 +1,15 @@
+using System.Text.RegularExpressions;
+
 namespace Kriptoloji1
 {
     public partial class Form1 : Form
     {
-       
-        private readonly char[] turkAlfabesi = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ".ToCharArray();
-        private readonly string anahtarAlfabe = "XNIÐKZYDSÖCTPBHUVJFLGÜORÇMÞEOI";
+
+        private readonly char[] turkAlfabesi = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ".ToCharArray();
+        private readonly string anahtarAlfabe = "XNIÄžKZYDSÃ–CTPBHUVJFLGÃœORÃ‡MÅžEOI";
+
+
+        //hill algoritmasÄ± iÃ§in gerekli metotlar 
 
         private char[,] MatrisOlustur(char[] alfabe)
         {
@@ -27,15 +32,32 @@ namespace Kriptoloji1
             }
             return (-1, -1);
         }
+        private int Mod(int a, int m)
+        {
+            return (a % m + m) % m;
+        }
+        private void TextBoxlariGizle()
+        {
+            label3.Visible = false;
+            textBox1.Visible = false;
+            label4.Visible = false;
+            textBox2.Visible = false;
 
+        }
+        
+        public Form1()
+        {
+            InitializeComponent();
+            TextBoxlariGizle();
+        }
 
-        // test edildi
+        // ÅŸifreleme algoritmalarÄ±
         private string SezarSifrele(string metin)
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ";
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
             int alfabeUzunlugu = alfabe.Length;
-            int kaydirmaAnahtari = 3; // Sabit kaydýrma deðeri
-            metin = metin.ToUpper(); // Büyük harflere çeviriyoruz
+            int kaydirmaAnahtari = 3; // Sabit kaydÄ±rma deÄŸeri
+            metin = metin.ToUpper(); // BÃ¼yÃ¼k harflere Ã§eviriyoruz
             string sifreliMetin = "";
 
             foreach (char karakter in metin)
@@ -44,25 +66,24 @@ namespace Kriptoloji1
 
                 if (index != -1)
                 {
-                    // Harf alfabenin içindeyse kaydýrma uygula
+                    // Harf alfabenin iÃ§indeyse kaydÄ±rma uygula
                     int yeniIndex = (index + kaydirmaAnahtari) % alfabeUzunlugu;
                     sifreliMetin += alfabe[yeniIndex];
                 }
                 else
                 {
-                    // Harf deðilse (boþluk, noktalama vs.) olduðu gibi ekle
-                    sifreliMetin += karakter;
+                    // Harf deÄŸilse (boÅŸluk, noktalama vs.) olduÄŸu gibi ekle
+                    //sifreliMetin += karakter;
                 }
             }
 
             return sifreliMetin;
         }
-        private string KaydirmaliSifrele(string metin)
+        private string KaydirmaliSifrele(string metin, int kaydirmaAnahtari)
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ";
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
             int alfabeUzunlugu = alfabe.Length;
-            int kaydirmaAnahtari = 5; // Sabit kaydýrma deðeri
-            metin = metin.ToUpper(); // Büyük harflere çeviriyoruz
+            metin = metin.ToUpper(); // BÃ¼yÃ¼k harflere Ã§eviriyoruz
             string sifreliMetin = "";
 
             foreach (char karakter in metin)
@@ -71,73 +92,50 @@ namespace Kriptoloji1
 
                 if (index != -1)
                 {
-                    // Harf alfabenin içindeyse kaydýrma uygula
+                    // Harf alfabenin iÃ§indeyse kaydÄ±rma uygula
                     int yeniIndex = (index + kaydirmaAnahtari) % alfabeUzunlugu;
                     sifreliMetin += alfabe[yeniIndex];
                 }
                 else
                 {
-                    // Harf deðilse (boþluk, noktalama vs.) olduðu gibi ekle
-                    sifreliMetin += karakter;
+                    // Harf deÄŸilse (boÅŸluk, noktalama vs.) olduÄŸu gibi ekle
+                   // sifreliMetin += karakter;
                 }
             }
 
             return sifreliMetin;
 
-            // burasý farklý kaynakta kaydýrmalý algoritma için her karakteri bir sonraki karakterin indexi kadar kaydýrýyor
 
-
-            //    int pozisyon = 1;
-
-            //    foreach (char karakter in metin)
-            //    {
-            //        int index = alfabe.IndexOf(karakter);
-
-            //        if (index != -1)
-            //        {
-            //            int yeniIndex = (index + pozisyon) % alfabeUzunlugu;
-            //            sifreliMetin += alfabe[yeniIndex];
-            //            pozisyon++; // Bir sonraki karakter daha fazla kaydýrýlýr
-            //        }
-            //        else
-            //        {
-            //            sifreliMetin += karakter;
-            //        }
-            //    }
-
-            //    return sifreliMetin;
         }
-        private string DogrusalSifrele(string metin)
+        private string DogrusalSifrele(string metin, int a, int b)
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ";
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
             int m = alfabe.Length;
-            int a = 3; // çarpan anahtar 
-            int b = 2; // toplama anahtarý
             metin = metin.ToUpper();
             string sifreliMetin = "";
 
             foreach (char karakter in metin)
             {
-                int index = (alfabe.IndexOf(karakter))+1;
+                int index = alfabe.IndexOf(karakter);
 
                 if (index != -1)
                 {
-                    int yeniIndex =( (a * index + b) % m);
-                    sifreliMetin += alfabe[(yeniIndex-1)];
+                    int yeniIndex = (a * index + b) % m;
+                    sifreliMetin += alfabe[yeniIndex];
                 }
                 else
                 {
-                    sifreliMetin += karakter; // noktalama, boþluk vs.
+                   // sifreliMetin += karakter; // noktalama, boÅŸluk vs.
                 }
             }
 
             return sifreliMetin;
         }
-        private string YerDegistirmeAlfabetikSifrele(string metin)
+        private string YerDegistirmeAlfabetikSifrele(string metin, string anahtarAlfabe)
 
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ";
-            string anahtarAlfabe = "ESDÐNÜAYMÇTÞÝUPHZRDLBKGJCVFÖI"; // Karýþýk alfabetik sýralama ANAHTAR
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
+
 
             metin = metin.ToUpper();
             string sifreliMetin = "";
@@ -151,32 +149,40 @@ namespace Kriptoloji1
                 }
                 else
                 {
-                    sifreliMetin += karakter;
+                   // sifreliMetin += karakter;
                 }
             }
 
             return sifreliMetin;
         }
-        private string PermutasyonSifrele(string metin)
+        private string PermutasyonSifrele(string metin, int blokBoyutu, int[] permutasyon)
         {
-            int blokBoyutu = 5;
-            int[] permutasyon = { 3, 0, 4, 1, 2 }; // Sabit bir permütasyon dizisi
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
             metin = metin.ToUpper();
+
+            // SADECE alfabe harflerini al
+            string temizMetin = "";
+            foreach (char c in metin)
+            {
+                if (alfabe.Contains(c))
+                    temizMetin += c;
+            }
+
             string sifreliMetin = "";
 
-            for (int i = 0; i < metin.Length; i += blokBoyutu)
+            for (int i = 0; i < temizMetin.Length; i += blokBoyutu)
             {
                 char[] blok = new char[blokBoyutu];
 
                 for (int j = 0; j < blokBoyutu; j++)
                 {
-                    if (i + j < metin.Length)
-                        blok[j] = metin[i + j];
+                    if (i + j < temizMetin.Length)
+                        blok[j] = temizMetin[i + j];
                     else
                         blok[j] = 'X'; // Eksik harf varsa 'X' ile doldur
                 }
 
-                // Permütasyona göre yeni blok oluþtur
+                // PermÃ¼tasyona gÃ¶re yeni blok oluÅŸtur
                 char[] sifreliBlok = new char[blokBoyutu];
                 for (int j = 0; j < blokBoyutu; j++)
                 {
@@ -188,47 +194,55 @@ namespace Kriptoloji1
 
             return sifreliMetin;
         }
-        private string RotaSolAltAnahtarli(string metin)
+        private string RotaSolAltAnahtarli(string metin, int anahtar)
         {
-            int anahtar = 5;
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
             metin = metin.ToUpper();
-            int uzunluk = metin.Length;
 
+            // Sadece alfabe karakterlerini al
+            string temizMetin = "";
+            foreach (char c in metin)
+            {
+                if (alfabe.Contains(c))
+                    temizMetin += c;
+            }
+
+            int uzunluk = temizMetin.Length;
             int kolon = anahtar;
             int satir = (int)Math.Ceiling(uzunluk / (double)kolon);
 
             char[,] matris = new char[satir, kolon];
 
-            // Metni matrise doldur (satýr satýr)
+            // Metni matrise doldur (satÄ±r satÄ±r)
             int index = 0;
             for (int i = 0; i < satir; i++)
             {
                 for (int j = 0; j < kolon; j++)
                 {
                     if (index < uzunluk)
-                        matris[i, j] = metin[index++];
+                        matris[i, j] = temizMetin[index++];
                     else
-                        matris[i, j] = 'j'; // Boþluklar X ile dolduruluyor
+                        matris[i, j] = 'X'; // BoÅŸluklar 'X' ile dolduruluyor
                 }
             }
 
             string sifreliMetin = "";
             int top = 0, bottom = satir - 1, left = 0, right = kolon - 1;
 
-            // Sol alt köþeden spiral okuma
+            // Sol alt kÃ¶ÅŸeden spiral okuma
             while (top <= bottom && left <= right)
             {
-                // Yukarý
+                // YukarÄ±
                 for (int i = bottom; i >= top; i--)
                     sifreliMetin += matris[i, left];
                 left++;
 
-                // Saða
+                // SaÄŸa
                 for (int i = left; i <= right; i++)
                     sifreliMetin += matris[top, i];
                 top++;
 
-                // Aþaðý
+                // AÅŸaÄŸÄ±
                 if (top <= bottom)
                 {
                     for (int i = top; i <= bottom; i++)
@@ -247,15 +261,23 @@ namespace Kriptoloji1
 
             return sifreliMetin;
         }
-        private string ZigzagYazVeOku(string metin)
-
+        private string ZigzagSifrele(string metin, int satirSayisi)
         {
-            int satirSayisi = 5;
-            metin = metin.ToUpper().Replace(" ", "");
-            if (satirSayisi <= 1 || metin.Length <= 1)
-                return metin;
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
 
-            // Satýr listesi oluþtur
+            // Metni bÃ¼yÃ¼k harfe Ã§evir, boÅŸluklarÄ± ve alfabede olmayan karakterleri kaldÄ±r
+            metin = metin.ToUpper();
+            string temizMetin = "";
+            foreach (char harf in metin)
+            {
+                if (alfabe.Contains(harf))
+                    temizMetin += harf;
+            }
+
+            if (satirSayisi <= 1 || temizMetin.Length <= 1)
+                return temizMetin;
+
+            // SatÄ±r listesi oluÅŸtur
             List<char>[] satirlar = new List<char>[satirSayisi];
             for (int i = 0; i < satirSayisi; i++)
                 satirlar[i] = new List<char>();
@@ -264,7 +286,7 @@ namespace Kriptoloji1
             bool asagiIniyor = true;
 
             // Zigzag dolumu
-            foreach (char harf in metin)
+            foreach (char harf in temizMetin)
             {
                 satirlar[satir].Add(harf);
 
@@ -282,7 +304,7 @@ namespace Kriptoloji1
                 }
             }
 
-            // Satýrlarý sýrayla birleþtir
+            // SatÄ±rlarÄ± sÄ±rayla birleÅŸtir
             string sifreli = "";
             foreach (var satirListesi in satirlar)
             {
@@ -292,37 +314,42 @@ namespace Kriptoloji1
 
             return sifreli;
         }
-        private string DortKareSifrele(string metin)
+        private string DortKareSifrele(string metin, string anahtarAlfabe2, int satir, int sutun)
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZX"; // 30 karakter
-            string anahtarAlfabe = "XNIÐKZYDSÖCTPBHUVJFLGÜORÇMÞEOI"; // 30 karakter
-            int satir = 6, sutun = 5;
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZX"; // 30 karakter
 
-            // Matrisleri tanýmla
-            char[,] A = new char[satir, sutun]; // Sol Üst
-            char[,] B = new char[satir, sutun]; // Sað Üst
+            // Matrisleri tanÄ±mla
+            char[,] A = new char[satir, sutun]; // Sol Ãœst
+            char[,] B = new char[satir, sutun]; // SaÄŸ Ãœst
             char[,] C = new char[satir, sutun]; // Sol Alt
-            char[,] D = new char[satir, sutun]; // Sað Alt
+            char[,] D = new char[satir, sutun]; // SaÄŸ Alt
 
             for (int i = 0; i < 30; i++)
             {
                 A[i / sutun, i % sutun] = alfabe[i];
                 D[i / sutun, i % sutun] = alfabe[i];
-                B[i / sutun, i % sutun] = anahtarAlfabe[i];
-                C[i / sutun, i % sutun] = anahtarAlfabe[i];
+                B[i / sutun, i % sutun] = anahtarAlfabe2[i];
+                C[i / sutun, i % sutun] = anahtarAlfabe2[i];
             }
 
-            // Metni hazýrlama
-            metin = metin.ToUpper().Replace(" ", "");
-            if (metin.Length % 2 != 0)
-                metin += "X";
+            // âœ… METNÄ° TEMÄ°ZLE
+            metin = metin.ToUpper();
+            string temizMetin = "";
+            foreach (char harf in metin)
+            {
+                if (alfabe.Contains(harf))
+                    temizMetin += harf;
+            }
+
+            if (temizMetin.Length % 2 != 0)
+                temizMetin += "X";
 
             string sifreli = "";
 
-            for (int i = 0; i < metin.Length; i += 2)
+            for (int i = 0; i < temizMetin.Length; i += 2)
             {
-                char h1 = metin[i];     // A matrisinde
-                char h2 = metin[i + 1]; // D matrisinde
+                char h1 = temizMetin[i];     // A matrisinde
+                char h2 = temizMetin[i + 1]; // D matrisinde
 
                 int aSatir = -1, aSutun = -1;
                 int dSatir = -1, dSutun = -1;
@@ -347,8 +374,8 @@ namespace Kriptoloji1
 
                 if (aSatir != -1 && aSutun != -1 && dSatir != -1 && dSutun != -1)
                 {
-                    char yeniH1 = B[aSatir, dSutun]; // Sað Üstten
-                    char yeniH2 = C[dSatir, aSutun]; // Sol Alttan
+                    char yeniH1 = B[aSatir, dSutun]; // SaÄŸ Ãœst
+                    char yeniH2 = C[dSatir, aSutun]; // Sol Alt
                     sifreli += yeniH1.ToString() + yeniH2.ToString();
                 }
                 else
@@ -359,30 +386,38 @@ namespace Kriptoloji1
 
             return sifreli;
         }
-        private string SayisalYerdegistirmeSifrele(string metin)
+        private string SayisalYerdegistirmeSifrele(string metin, int anahtar2)
         {
-            int anahtar = 7;
-            metin = metin.ToUpper().Replace(" ", "");
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZX"; // 30 karakterlik TÃ¼rk alfabesi
 
-            int sutunSayisi = anahtar;
-            int satirSayisi = (int)Math.Ceiling((double)metin.Length / sutunSayisi);
+            // Metni temizle: sadece TÃ¼rk alfabesindeki harfleri al
+            metin = metin.ToUpper();
+            string temizMetin = "";
+            foreach (char harf in metin)
+            {
+                if (alfabe.Contains(harf))
+                    temizMetin += harf;
+            }
+
+            int sutunSayisi = anahtar2;
+            int satirSayisi = (int)Math.Ceiling((double)temizMetin.Length / sutunSayisi);
 
             char[,] tablo = new char[satirSayisi, sutunSayisi];
 
-            // Tabloya doldurma (soldan saða yukarýdan aþaðýya)
+            // Tabloya doldurma (soldan saÄŸa, yukarÄ±dan aÅŸaÄŸÄ±ya)
             int index = 0;
             for (int i = 0; i < satirSayisi; i++)
             {
                 for (int j = 0; j < sutunSayisi; j++)
                 {
-                    if (index < metin.Length)
-                        tablo[i, j] = metin[index++];
+                    if (index < temizMetin.Length)
+                        tablo[i, j] = temizMetin[index++];
                     else
-                        tablo[i, j] = 'X'; // eksik karakterler için doldurma
+                        tablo[i, j] = 'X'; // eksik yerleri 'X' ile doldur
                 }
             }
 
-            // Tabloyu sütun sütun okuyarak þifreleme
+            // Tabloyu sÃ¼tun sÃ¼tun okuyarak ÅŸifreleme
             string sifreli = "";
             for (int j = 0; j < sutunSayisi; j++)
             {
@@ -394,10 +429,10 @@ namespace Kriptoloji1
 
             return sifreli;
         }
-        private string VigenereSifrele(string metin)
+        private string VigenereSifrele(string metin, string anahtar3)
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ";
-            string anahtar = "ARABA"; // Buraya dilediðin sabit anahtarý koyabilirsin
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
+
             metin = metin.ToUpper().Replace(" ", "");
 
             string sonuc = "";
@@ -409,97 +444,53 @@ namespace Kriptoloji1
                 if (alfabe.Contains(harf))
                 {
                     int metinIndex = alfabe.IndexOf(harf);
-                    int anahtarHarfIndex = alfabe.IndexOf(anahtar[anahtarIndex % anahtar.Length]);
+                    int anahtarHarfIndex = alfabe.IndexOf(anahtar3[anahtarIndex % anahtar3.Length]);
 
-                    int sifreIndex = ((metinIndex + anahtarHarfIndex) % alfabe.Length)+1;
+                    int sifreIndex = ((metinIndex + anahtarHarfIndex) % alfabe.Length);//+1 eklenirse daÄŸa doÄŸru ama deÅŸifreleme Ã§alÄ±ÅŸmÄ±yor 
                     sonuc += alfabe[sifreIndex];
 
                     anahtarIndex++;
                 }
                 else
                 {
-                    sonuc += harf; // harf alfabe dýþýndaysa direkt ekle
+                    //sonuc += harf; // harf alfabe dÄ±ÅŸÄ±ndaysa direkt ekle
                 }
             }
 
             return sonuc;
         }
-        private string HillSifrele(string metin)
+        private string HillSifrele(string metin, int[,] anahtarMatris)
         {
-            string alfabe = "ABCÇDEFGÐHIÝJKLMNOÖPRSÞTUÜVYZ";
+            string alfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
             metin = metin.ToUpper().Replace(" ", "");
 
-            // Metin uzunluðu 3'ün katý olmalý, deðilse X ekle
-            while (metin.Length % 3 != 0)
+            int boyut = anahtarMatris.GetLength(0);
+            int mod = alfabe.Length;
+
+            // Eksik harfleri X ile tamamla
+            while (metin.Length % boyut != 0)
+                metin += "X";
+
+            string sifreli = "";
+
+            for (int i = 0; i < metin.Length; i += boyut)
             {
-                metin += "A";
-            }
+                int[] grup = new int[boyut];
+                for (int j = 0; j < boyut; j++)
+                    grup[j] = alfabe.IndexOf(metin[i + j]);
 
-            int[,] anahtarMatris = { { 3, 2, 4 }, { 1, 3, 5 }, { 0, 2, 1 } };
-            string sonuc = "";
-
-            for (int i = 0; i < metin.Length; i += 3)
-            {
-                int[] vektor = new int[3];
-
-                // 1 tabanlý indeks alýyoruz (A=1, ..., Z=29)
-                for (int j = 0; j < 3; j++)
-                {
-                    vektor[j] = alfabe.IndexOf(metin[i + j]) + 1;
-                }
-
-                int[] sifreliVektor = new int[3];
-
-                // Matris çarpýmý ve mod alma
-                for (int satir = 0; satir < 3; satir++)
+                for (int satir = 0; satir < boyut; satir++)
                 {
                     int toplam = 0;
-                    for (int sutun = 0; sutun < 3; sutun++)
-                    {
-                        toplam += anahtarMatris[satir, sutun] * vektor[sutun];
-                    }
-                    sifreliVektor[satir] = toplam % alfabe.Length;
-                    if (sifreliVektor[satir] == 0)
-                        sifreliVektor[satir] = alfabe.Length; // 0 -> 29
-                }
+                    for (int sutun = 0; sutun < boyut; sutun++)
+                        toplam += anahtarMatris[satir, sutun] * grup[sutun];
 
-                // Þifreli harfleri ekle (dizi 0 indeksli, -1)
-                foreach (int index in sifreliVektor)
-                {
-                    sonuc += alfabe[index - 1];
+                    sifreli += alfabe[Mod(toplam, mod)];
                 }
             }
 
-            return sonuc;
+            return sifreli;
         }
-
-
-
-
-        public Form1()
-        {
-            InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            cmbAlgorithm.Items.AddRange(new string[]
-{
-    "Sezar Þifreleme",
-    "Kaydýrmalý Þifreleme",
-    "Doðrusal Þifreleme",
-    "Yer Deðiþtirme",
-    "Permutasyon",
-    "Rota Algoritmasý",
-    "Zigzag Algoritmasý",
-    "4 Kare",
-    "Yer Deðiþtirme (Sayý Anahtarlý)",
-    "Vigenère",
-    "Hill Algoritmasý"
-});
-
-        }
-
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
             string inputText = txtInput.Text;
@@ -509,47 +500,198 @@ namespace Kriptoloji1
 
             switch (selectedAlgorithm)
             {
-                case "Sezar Þifreleme":
+                case "Sezar Åžifreleme":
                     result = SezarSifrele(inputText);
                     break;
-                case "Kaydýrmalý Þifreleme":
-                    result = KaydirmaliSifrele(inputText);
+                case "KaydÄ±rmalÄ± Åžifreleme":
+                    if (string.IsNullOrWhiteSpace(textBox1.Text))
+                    {
+                        MessageBox.Show("LÃ¼tfen bir kaydÄ±rma anahtarÄ± giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // Bu durumda ÅŸifreleme iÅŸlemi yapÄ±lmaz
+                    }
+
+                    int kaydÄ±rmaanahtarÄ± = Convert.ToInt16(textBox1.Text);
+                    result = KaydirmaliSifrele(inputText, kaydÄ±rmaanahtarÄ±);
                     break;
-                case "Doðrusal Þifreleme":
-                    result = DogrusalSifrele(inputText);
+                case "DoÄŸrusal Åžifreleme":
+                    if (string.IsNullOrWhiteSpace(textBox1.Text) || string.IsNullOrWhiteSpace(textBox2.Text))
+                    {
+                        MessageBox.Show("LÃ¼tfen iki anahtarÄ±da giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // Bu durumda ÅŸifreleme iÅŸlemi yapÄ±lmaz
+                    }
+                    int a = Convert.ToInt16(textBox1.Text);
+                    int b = Convert.ToInt16(textBox2.Text);
+                    result = DogrusalSifrele(inputText, a, b);
                     break;
-                case "Yer Deðiþtirme":
-                    result = YerDegistirmeAlfabetikSifrele(inputText);
+                case "Yer DeÄŸiÅŸtirme":
+                     string anahtarAlfabe = "ESDÄžNÃœAYMÃ‡TÅžÄ°UPHZRDLBKGJCVFÃ–I"; // KarÄ±ÅŸÄ±k alfabetik sÄ±ralama ANAHTAR
+                    //string anahtarAlfabe = Convert.ToString(textBox1.Text).ToUpper();
+                    result = YerDegistirmeAlfabetikSifrele(inputText, anahtarAlfabe);
                     break;
                 case "Permutasyon":
-                    result = PermutasyonSifrele(inputText);
+                    int blokBoyutu = 5;
+                    int[] permutasyon = { 3, 0, 4, 1, 2 }; // Sabit bir permÃ¼tasyon dizisi
+                    result = PermutasyonSifrele(inputText, blokBoyutu, permutasyon);
                     break;
-                case "Rota Algoritmasý":
-                    result = RotaSolAltAnahtarli(inputText);
+                case "Rota AlgoritmasÄ±":
+                    if (string.IsNullOrWhiteSpace(textBox1.Text))
+                    {
+                        MessageBox.Show("LÃ¼tfen bir  anahtar giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // Bu durumda ÅŸifreleme iÅŸlemi yapÄ±lmaz
+                    }
+                    int anahtar = Convert.ToInt16(textBox1.Text);
+                    result = RotaSolAltAnahtarli(inputText, anahtar);
                     break;
-                case "Zigzag Algoritmasý":
-                    result = ZigzagYazVeOku(inputText);
+                case "Zigzag AlgoritmasÄ±":
+                    if (string.IsNullOrWhiteSpace(textBox1.Text))
+                    {
+                        MessageBox.Show("LÃ¼tfen bir  anahtar giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // Bu durumda ÅŸifreleme iÅŸlemi yapÄ±lmaz
+                    }
+                    int satirSayisi = Convert.ToInt16(textBox1.Text);
+                    result = ZigzagSifrele(inputText, satirSayisi);
                     break;
                 case "4 Kare":
+                    if (string.IsNullOrWhiteSpace(textBox1.Text) || string.IsNullOrWhiteSpace(textBox2.Text))
+                    {
+                        MessageBox.Show("LÃ¼tfen iki anahtarÄ±da giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // Bu durumda ÅŸifreleme iÅŸlemi yapÄ±lmaz
+                    }
+                    string anahtarAlfabe2 = "XNIÄžKZYDSÃ–CTPBHUVJFLGÃœORÃ‡MÅžEOI"; // 30 karakter
+                    int satir = Convert.ToInt16(textBox1.Text);
+                    int sutun = Convert.ToInt16(textBox2.Text);
+                    result = DortKareSifrele(inputText, anahtarAlfabe2, satir, sutun);
+                    break;
+                case "Yer DeÄŸiÅŸtirme (SayÄ± AnahtarlÄ±)":
+                    if (string.IsNullOrWhiteSpace(textBox1.Text))
+                    {
+                        MessageBox.Show("LÃ¼tfen  anahtarÄ± giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return; // Bu durumda ÅŸifreleme iÅŸlemi yapÄ±lmaz
+                    }
+                    int anahtar2 = Convert.ToInt16(textBox1.Text);// anahtar sayÄ±
+                    result = SayisalYerdegistirmeSifrele(inputText, anahtar2);
 
-                    result = DortKareSifrele(inputText);
                     break;
-                case "Yer Deðiþtirme (Sayý Anahtarlý)":
-                    result = SayisalYerdegistirmeSifrele(inputText);
+                case "VigenÃ¨re":
+                    string anahtarMetin = textBox1.Text;
+
+                    if (string.IsNullOrWhiteSpace(anahtarMetin))
+                    {
+                        MessageBox.Show("LÃ¼tfen anahtar kelimeyi giriniz.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Sadece TÃ¼rkÃ§e bÃ¼yÃ¼k harf karakterleri iÃ§eriyor mu kontrolÃ¼
+                    string turkceAlfabe = "ABCÃ‡DEFGÄžHIÄ°JKLMNOÃ–PRSÅžTUÃœVYZ";
+                    foreach (char c in anahtarMetin.ToUpper())
+                    {
+                        if (!turkceAlfabe.Contains(c))
+                        {
+                            MessageBox.Show("Anahtar sadece TÃ¼rkÃ§e harflerden oluÅŸmalÄ±dÄ±r.", "UyarÄ±", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
+                    string anahtar3 = anahtarMetin.ToUpper();
+                    result = VigenereSifrele(inputText, anahtar3);
                     break;
-                case "Vigenère":
-                    result = VigenereSifrele(inputText);
+                case "Hill AlgoritmasÄ±":
+                    int[,] anahtarMatris = new int[,]
+  {
+    { 3, 2, 4 },
+    { 1, 3, 5 },
+    { 0, 2, 1 }
+  };
+                    result = HillSifrele(inputText, anahtarMatris);
                     break;
-                case "Hill Algoritmasý":
-                    result = HillSifrele(inputText);
-                    break;
+
                 default:
-                    MessageBox.Show("Lütfen bir algoritma seçin.");
+                    MessageBox.Show("LÃ¼tfen bir algoritma seÃ§in.");
                     return;
             }
 
             txtOutput.Text = result;
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            cmbAlgorithm.Items.AddRange(new string[]
+{
+     "Åžifreleme AlgoritmasÄ± SeÃ§in",
+    "Sezar Åžifreleme",
+    "KaydÄ±rmalÄ± Åžifreleme",
+    "DoÄŸrusal Åžifreleme",
+    "Yer DeÄŸiÅŸtirme",
+    "Permutasyon",
+    "Rota AlgoritmasÄ±",
+    "Zigzag AlgoritmasÄ±",
+    "4 Kare",
+    "Yer DeÄŸiÅŸtirme (SayÄ± AnahtarlÄ±)",
+    "VigenÃ¨re",
+    "Hill AlgoritmasÄ±",
+
+});
+            cmbAlgorithm.SelectedIndex = 0;
+
+        }
+
+        private void cmbAlgorithm_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string secilenIslem = cmbAlgorithm.SelectedItem.ToString();
+            TextBoxlariGizle();
+
+            switch (secilenIslem)
+            {
+                case "KaydÄ±rmalÄ± Åžifreleme":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    break;
+                case "DoÄŸrusal Åžifreleme":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    textBox2.Visible = true;
+                    label4.Visible = true;
+                    break;
+                case "Yer DeÄŸiÅŸtirme":
+                    //textBox1.Visible = true;
+                    //label3.Visible = true;
+                    break;
+
+                case "Rota AlgoritmasÄ±":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    break;
+                case "Zigzag AlgoritmasÄ±":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    break;
+
+                case "4 Kare":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    textBox2.Visible = true;
+                    label4.Visible = true;
+                    break;
+                case "Yer DeÄŸiÅŸtirme (SayÄ± AnahtarlÄ±)":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    break;
+                case "VigenÃ¨re":
+                    textBox1.Visible = true;
+                    label3.Visible = true;
+                    break;
+
+                default:
+                    textBox1.Visible = false;
+                    label3.Visible = false;
+                    textBox2.Visible = false;
+                    label4.Visible = false;
+
+                    break;
+            }
+        }
+
+        
     }
-    }
+}
+
 
